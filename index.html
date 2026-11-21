@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='4' width='12' height='3.2' rx='1.6' fill='%2314211D'/%3E%3Crect x='8' y='10.4' width='14' height='3.2' rx='1.6' fill='%2314211D'/%3E%3Crect x='2' y='16.8' width='9' height='3.2' rx='1.6' fill='%23087443'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14211D;
+    --white: #FFFFFF;
+    --mist: #F3F5F2;
+    --value: #087443;
+    --value-soft: #E6F1EA;
+    --stale: #A35A00;
+    --stale-soft: #FAEFE2;
+    --line: #DCE2DD;
+    --muted: #5B6B64;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --radius: 16px;
+    --dayh: 46px;
+    --marketh: 34px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  /* Closed disclosures must not render any content for readers or word counters. */
+  details:not([open]) > *:not(summary) { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--mist);
+    color: var(--ink);
+    font: 15px/1.45 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  button, summary { cursor: pointer; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .wrap { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+  .ic { display: inline-flex; flex: none; }
+  .ic svg { display: block; }
+
+  /* Header */
+  .top { background: var(--white); border-bottom: 1px solid var(--line); }
+  .toprow {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 10px; padding-top: 10px; padding-bottom: 10px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0;
+    margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.025em;
+  }
+  .brand .tick-v { fill: var(--value); }
+  .views {
+    display: inline-flex; gap: 2px; padding: 3px;
+    background: var(--mist); border: 1px solid var(--line); border-radius: 999px;
+  }
+  .views button {
+    min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--muted);
+    font-size: 14px; font-weight: 600; white-space: nowrap;
+  }
+  .views button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+  .views button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+
+  .filters { position: relative; }
+  .filters > summary {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: 44px; padding: 0 16px; list-style: none;
+    background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+    font-size: 14px; font-weight: 600;
+  }
+  .filters > summary::-webkit-details-marker { display: none; }
+  .filters > summary .chev { transition: transform .15s ease; }
+  .filters[open] > summary { background: var(--mist); }
+  .filters[open] > summary .chev { transform: rotate(180deg); }
+  .panel {
+    position: absolute; right: 0; top: calc(100% + 8px); z-index: 40;
+    width: min(620px, calc(100vw - 32px));
+    max-height: calc(100vh - 96px); overflow: auto;
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: 0 18px 48px rgba(20, 33, 29, .16);
+    padding: 16px; display: grid; gap: 14px;
+  }
+  .frow { display: grid; gap: 8px; }
+  .flabel { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .choices { display: flex; flex-wrap: wrap; gap: 6px; }
+  .choices button {
+    min-height: 44px; padding: 0 14px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--white); color: var(--ink);
+    font-size: 13.5px; font-weight: 600;
+  }
+  .choices button:hover { border-color: var(--ink); }
+  .choices button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--white); }
+  input[type="search"] {
+    width: 100%; min-height: 44px; padding: 0 14px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--white); color: var(--ink); font: 15px var(--sans);
+  }
+
+  /* Status line */
+  .statusbar { background: var(--white); border-top: 1px solid var(--line); }
+  .statusline > summary {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: 44px; list-style: none;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .statusline > summary::-webkit-details-marker { display: none; }
+  .statusline > summary b { color: var(--ink); font-weight: 600; }
+  .statusline > summary .late { color: var(--stale); font-weight: 600; }
+  .statusline > summary .chev { transition: transform .15s ease; }
+  .statusline[open] > summary .chev { transform: rotate(180deg); }
+  .statusbody { display: grid; gap: 10px; max-width: 760px; padding: 0 0 14px; }
+  .booklist { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--mist); font-size: 12.5px; color: var(--muted); white-space: nowrap;
+  }
+  .chip .bk-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip .bk-name { color: var(--ink); font-weight: 600; }
+  .chip .bk-age { color: var(--muted); }
+  .chip .bk-state { font-weight: 700; }
+  .chip.ok { color: var(--value); }
+  .chip.stale { color: var(--stale); }
+  .statusbody .note { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+
+  /* Main */
+  main { padding-top: 18px; padding-bottom: 48px; }
+  .empty {
+    padding: 28px 20px; border: 1px dashed var(--line); border-radius: var(--radius);
+    background: var(--white); color: var(--muted);
+  }
+  .error {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    gap: 10px 16px; margin-bottom: 16px; padding: 12px 14px;
+    border: 1px solid #E4C49E; border-radius: 12px;
+    background: var(--stale-soft); color: #6E3D00; font-size: 14px;
+  }
+  .error button {
+    min-height: 44px; padding: 0 16px; border: 1px solid #D9B07C;
+    border-radius: 10px; background: var(--white); font-weight: 600;
+  }
+
+  /* Value cards */
+  .vgrid {
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  .vgrid.compact { grid-template-columns: minmax(0, 560px); }
+  .vgrid.compact .vcard:nth-child(n+2) { display: none; }
+  .vcard {
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    padding: 18px; background: var(--white);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20, 33, 29, .04);
+  }
+  .vhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px 12px; flex-wrap: wrap; }
+  .vsel { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .selimg { width: 30px; height: 30px; object-fit: contain; flex: none; }
+  .selmark {
+    width: 30px; height: 30px; border-radius: 50%; flex: none;
+    background: var(--mist); color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .vbet { font-size: 19px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  .vgame { margin-top: 2px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  .vgame .game-logo { width: 14px; height: 14px; object-fit: contain; vertical-align: -2px; margin-right: 3px; }
+  .pill {
+    display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px;
+    border-radius: 999px; background: var(--value-soft); color: var(--value);
+    font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  }
+  .vquote { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .vprice {
+    font-family: var(--mono); font-size: 44px; font-weight: 700; line-height: .95;
+    letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+  }
+  .vbook { font-size: 15px; font-weight: 600; }
+  .vfresh { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+  .vfresh.warn { color: var(--stale); font-weight: 600; }
+  .quotes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quote {
+    display: inline-flex; align-items: baseline; gap: 6px;
+    padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .quote b { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); }
+  .quote.best { border-color: var(--value-soft); background: var(--value-soft); }
+  .quote.best b { color: var(--value); }
+  .vgrid.compact .vcard:first-child .quotes { display: none; }
+  .why { margin-top: auto; border-top: 1px solid var(--line); }
+  .why > summary {
+    display: flex; align-items: center; gap: 8px;
+    min-height: 44px; list-style: none;
+    font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .why > summary::-webkit-details-marker { display: none; }
+  .why > summary::after {
+    content: ""; width: 7px; height: 7px; margin-left: auto; flex: none;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg); transition: transform .15s ease;
+  }
+  .why[open] > summary::after { transform: rotate(225deg); }
+  .whybody { padding: 2px 0 4px; }
+  .est {
+    display: grid; grid-template-columns: 1fr auto; gap: 7px 16px;
+    padding: 12px; border-radius: 12px; background: var(--mist); font-size: 13px;
+  }
+  .est span { color: var(--muted); }
+  .est b {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-weight: 600; text-align: right;
+  }
+  .whybody .note { margin: 10px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+  .whybody .note + .note { margin-top: 6px; }
+  .more {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; margin-top: 16px; padding: 0 18px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--white); font-size: 14px; font-weight: 600;
+  }
+  .more:hover { border-color: var(--ink); }
+
+  /* Board */
+  .boardwrap {
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+    max-height: 72vh; overflow: auto; overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dayh {
+    position: sticky; top: 0; left: 0; z-index: 7;
+    display: flex; align-items: center; height: var(--dayh); margin: 0; padding: 0 14px;
+    background: var(--white); border-bottom: 1px solid var(--line);
+    font-size: 15px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+  }
+  .marketh {
+    position: sticky; top: var(--dayh); left: 0; z-index: 6;
+    display: flex; align-items: center; height: var(--marketh); margin: 0; padding: 0 14px;
+    background: var(--mist); color: var(--muted);
+    font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  }
+  table.board {
+    width: 100%; min-width: 920px; table-layout: fixed;
+    border-collapse: separate; border-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  table.board th, table.board td { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.board thead th {
+    position: sticky; top: calc(var(--dayh) + var(--marketh)); z-index: 5;
+    height: 38px; background: var(--white);
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    text-align: right;
+  }
+  table.board thead th.evc { left: 0; z-index: 8; text-align: left; }
+  table.board .evc { width: 200px; }
+  table.board .bestc { width: 120px; }
+  table.board .bookc { width: 98px; text-align: right; }
+  table.board tbody th.evc {
+    position: sticky; left: 0; z-index: 3;
+    background: var(--white); text-align: left; white-space: normal; vertical-align: middle;
+  }
+  table.board tbody.alt td, table.board tbody.alt th.evc { background: #F8FAF8; }
+  table.board tbody td { font-family: var(--mono); font-size: 13px; color: var(--ink); white-space: nowrap; }
+  table.board tbody td.bestc { background: #EDF5F0; color: var(--value); font-weight: 600; }
+  table.board tbody.alt td.bestc { background: #EDF5F0; }
+  table.board td .ln { color: var(--muted); font-weight: 500; }
+  table.board td .na { color: #A9B3AD; }
+  .evname {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--sans); font-size: 13.5px; font-weight: 600;
+    line-height: 1.25; overflow-wrap: anywhere;
+  }
+  .evname img { width: 20px; height: 20px; object-fit: contain; flex: none; }
+  .evmeta {
+    margin-top: 3px; font-family: var(--sans); font-size: 11.5px;
+    line-height: 1.35; color: var(--muted); overflow-wrap: anywhere;
+  }
+  .bestc .bp { display: block; font-size: 13px; font-weight: 600; }
+  .bestc .bb { display: block; margin-top: 1px; font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition: none !important; animation: none !important; scroll-behavior: auto !important;
+    }
+  }
+  @media (max-width: 700px) {
+    .brand { flex: 1 1 auto; }
+    .filters { order: 2; margin-left: auto; }
+    .views { order: 3; flex: 1 1 100%; display: grid; grid-template-columns: 1fr 1fr; }
+    .views button { width: 100%; }
+    table.board { min-width: 840px; }
+    table.board .evc { width: 150px; }
+    table.board .bestc { width: 110px; }
+    table.board .bookc { width: 96px; }
+  }
+  @media print {
+    .controls, .error, .filters, .views, .more, .statusbar { display: none !important; }
+    body { background: #fff; }
+    .boardwrap { max-height: none; overflow: visible; border: 0; }
+    .dayh, .marketh, table.board thead th { position: static; }
+    table.board { min-width: 0; }
+    .vgrid.compact .vcard:nth-child(n+2) { display: flex; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap toprow">
+    <h1 class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="2" y="4" width="12" height="3.2" rx="1.6" fill="currentColor"></rect>
+        <rect x="8" y="10.4" width="14" height="3.2" rx="1.6" fill="currentColor"></rect>
+        <rect class="tick-v" x="2" y="16.8" width="9" height="3.2" rx="1.6"></rect>
+      </svg>
+      <span data-brand></span>
+    </h1>
+
+    <div class="views" role="group" aria-label="View">
+      <button type="button" data-view="prices" aria-pressed="true">Better prices</button>
+      <button type="button" data-view="odds" aria-pressed="false">All odds</button>
+    </div>
+
+    <details class="filters" id="filters">
+      <summary>
+        <span class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3.5h12L9.5 8.4V13l-3 1.2V8.4L2 3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+        Filters
+        <span class="ic chev" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </summary>
+      <div class="panel">
+        <div class="frow">
+          <span class="flabel" id="lbl-league">League</span>
+          <div id="leagues" class="choices" role="group" aria-labelledby="lbl-league"></div>
+        </div>
+        <div class="frow">
+          <span class="flabel" id="lbl-market">Market</span>
+          <div id="markets" class="choices" role="group" aria-labelledby="lbl-market">
+            <button type="button" data-market="all" aria-pressed="true">All</button>
+            <button type="button" data-market="moneyline" aria-pressed="false">Moneyline</button>
+            <button type="button" data-market="spread" aria-pressed="false">Spread</button>
+            <button type="button" data-market="total" aria-pressed="false">Total</button>
+          </div>
+        </div>
+        <div class="frow">
+          <label class="flabel" for="search">Search</label>
+          <input id="search" type="search" placeholder="Team or bet" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </details>
+  </div>
+  <div class="statusbar">
+    <div class="wrap">
+      <details class="statusline" id="status">
+        <summary>
+          <span class="ic" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6V8l2.2 1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <b id="bookcount">6 books</b>
+          <span aria-hidden="true">·</span>
+          <span>updated <span id="feedage">Loading…</span></span>
+          <span class="ic chev" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="statusbody">
+          <ul id="bookstatus" class="booklist" aria-label="Book status"></ul>
+          <p class="note">Green means the last check worked and the price is under 30 min old.</p>
+          <p class="note">We compare each price with a Pinnacle estimate. Prices are checked every 10 min.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="error" class="error" role="alert" hidden></div>
+
+  <section id="prices" aria-label="Better prices">
+    <div id="value"></div>
+  </section>
+
+  <section id="odds" aria-label="All odds" hidden>
+    <div id="board"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* Rename the product in one place. */
+  const PRODUCT_NAME = 'Ontario Odds';
+
+  const SAMPLE = new URLSearchParams(location.search).get('sample') === '1';
+  const BOOKS = [
+    ['pinnacle', 'Pinnacle'],
+    ['betmgm', 'BetMGM'],
+    ['betrivers_on', 'BetRivers'],
+    ['proline', 'PROLINE+'],
+    ['dazn_bet', 'DAZN Bet'],
+    ['neobet', 'NEO.bet'],
+  ];
+  const MARKETS = ['moneyline', 'spread', 'total'];
+  const MARKET_LABEL = { moneyline: 'Moneyline', spread: 'Spread', total: 'Total' };
+  const MARKET_KEY = { moneyline: 'ml', spread: 'spread', total: 'total' };
+  const STALE_MS = 30 * 60000;
+  const LATE_MS = 20 * 60000;
+  const FRESH_LIMIT = 10;
+
+  const $ = (id) => document.getElementById(id);
+  const pricesEl = $('prices'), oddsEl = $('odds');
+  const valueEl = $('value'), boardEl = $('board'), errorEl = $('error');
+  const updatedEl = $('feedage'), booksEl = $('bookstatus');
+  const bookCountEl = $('bookcount');
+  const leaguesEl = $('leagues'), marketsEl = $('markets'), searchEl = $('search');
+  const viewsEl = document.querySelector('.views'), filtersEl = $('filters'), statusEl = $('status');
+
+  const state = {
+    data: null,
+    loading: true,
+    view: readView(),
+    league: 'All',
+    market: 'all',
+    query: '',
+    expanded: false,
+  };
+
+  const timeFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+  const dayFmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  const monthDayFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+
+  document.title = PRODUCT_NAME;
+  document.querySelectorAll('[data-brand]').forEach((node) => { node.textContent = PRODUCT_NAME; });
+  if (bookCountEl) bookCountEl.textContent = BOOKS.length + ' books';
+
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  };
+  const icon = (markup, cls) => {
+    const wrap = el('span', 'ic' + (cls ? ' ' + cls : ''));
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.innerHTML = markup;
+    return wrap;
+  };
+  const OU_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 14.5 12 10l4 4.5M8 20l4-4.5 4 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const logoImg = (file, cls) => {
+    if (!file) return null;
+    const img = el('img', cls || 'logo');
+    img.src = file;
+    img.alt = '';
+    img.width = 20;
+    img.height = 20;
+    img.loading = 'lazy';
+    return img;
+  };
+  const dec = (a) => (a > 0 ? 1 + a / 100 : a < 0 ? 1 + 100 / -a : 1);
+  const minus = (text) => String(text).replace('-', '−');
+  const fmtAm = (a) => (a == null || !Number.isFinite(Number(a)) ? '–' : minus((a > 0 ? '+' : '') + Number(a)));
+  const fmtNum = (n) => minus(Number.isInteger(n) ? String(n) : String(+Number(n).toFixed(1)));
+  const fmtSigned = (n) => (n > 0 ? '+' + fmtNum(n) : fmtNum(n));
+  const fmtPct = (n) => (Math.round(n * 10) / 10).toFixed(1).replace(/\.0$/, '');
+  const fmtAgeMin = (value) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return '';
+    if (n < 1) return 'just now';
+    if (n < 60) return n + ' min ago';
+    const h = Math.floor(n / 60), r = Math.round(n % 60);
+    return h + ' hr' + (r ? ' ' + r + ' min' : '') + ' ago';
+  };
+  const fmtAgeShort = (n) => (n < 1 ? 'now' : n < 60 ? n + ' min' : Math.floor(n / 60) + ' hr');
+  const fmtAgeCompact = (n) => (n < 1 ? 'now' : n < 60 ? n + 'm ago' : Math.floor(n / 60) + 'h ago');
+  const book = (key) => (((state.data && state.data.books) || []).find((b) => b.key === key)) || {};
+  const bookName = (key) => book(key).name || (BOOKS.find((b) => b[0] === key) || [])[1] || key;
+  const generated = () => {
+    const t = state.data ? Date.parse(state.data.generated_at) : NaN;
+    return Number.isFinite(t) ? t : null;
+  };
+
+  function readView() {
+    try {
+      return localStorage.getItem('oo.view') === 'odds' ? 'odds' : 'prices';
+    } catch (err) {
+      return 'prices';
+    }
+  }
+  function saveView(view) {
+    try { localStorage.setItem('oo.view', view); } catch (err) { /* private mode */ }
+  }
+
+  function startLabel(value) {
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return 'Time to be announced';
+    return dayFmt.format(date).replace(',', '') + ', ' + timeFmt.format(date);
+  }
+
+  function lastWord(name) {
+    const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+    return words.length ? words[words.length - 1] : '';
+  }
+  function fullMatchup(game) {
+    return String(game || '').replace(' @ ', ' at ');
+  }
+  function matchup(game) {
+    const parts = String(game || '').split(' @ ');
+    if (parts.length < 2) return String(game || '');
+    return lastWord(parts[0]) + '–' + lastWord(parts.slice(1).join(' @ '));
+  }
+
+  function estimateAmerican(bet) {
+    const fair = Number(bet.fair);
+    if (!Number.isFinite(fair) || fair <= 1) return null;
+    return fair >= 2 ? Math.round((fair - 1) * 100) : Math.round(-100 / (fair - 1));
+  }
+
+  function betLogo(bet) {
+    const text = String(bet.bet || '').toLowerCase();
+    if (!text) return null;
+    const parts = String(bet.game || '').split(' @ ');
+    const away = (parts[0] || '').trim(), home = (parts.slice(1).join(' @ ') || '').trim();
+    const starts = (name) => name && text.indexOf(name.toLowerCase()) === 0;
+    if (starts(away) && bet.away_logo) return bet.away_logo;
+    if (starts(home) && bet.home_logo) return bet.home_logo;
+    return null;
+  }
+
+  /* ---------- filters ---------- */
+
+  function valueRows() {
+    const now = Date.now();
+    const q = state.query.trim().toLowerCase();
+    return ((state.data && state.data.value) || []).filter((v) => {
+      if (Date.parse(v.start) <= now) return false;
+      if (state.league !== 'All' && v.league !== state.league) return false;
+      if (state.market !== 'all' && v.market !== state.market) return false;
+      if (q) {
+        const hay = [v.game, v.bet, bookName(v.book), v.league].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function groupValue(rows) {
+    const groups = new Map();
+    rows.forEach((row) => {
+      const key = [row.game || '', row.market || '', row.bet || ''].join('|');
+      if (!groups.has(key)) groups.set(key, { quotes: [] });
+      groups.get(key).quotes.push(row);
+    });
+    return Array.from(groups.values()).map((group) => {
+      group.quotes.sort((a, b) => dec(b.american) - dec(a.american) || (Number(b.edge) || 0) - (Number(a.edge) || 0));
+      group.best = group.quotes[0];
+      group.edge = Math.max.apply(null, group.quotes.map((q) => Number(q.edge) || 0));
+      return group;
+    }).sort((a, b) => b.edge - a.edge || new Date(a.best.start) - new Date(b.best.start));
+  }
+
+  function boardGames() {
+    const q = state.query.trim().toLowerCase();
+    return ((state.data && state.data.games) || [])
+      .filter((g) => state.league === 'All' || g.league === state.league)
+      .filter((g) => !q
+        || String(g.away || '').toLowerCase().includes(q)
+        || String(g.home || '').toLowerCase().includes(q)
+        || String(g.league || '').toLowerCase().includes(q))
+      .sort((a, b) => new Date(a.start) - new Date(b.start));
+  }
+
+  /* ---------- status ---------- */
+
+  function renderStatus() {
+    const t = generated();
+    const ageMin = t == null ? null : Math.floor(Math.max(0, Date.now() - t) / 60000);
+    updatedEl.textContent = t == null
+      ? (state.loading ? 'loading…' : 'time unknown')
+      : fmtAgeCompact(ageMin);
+    updatedEl.classList.toggle('late', ageMin != null && ageMin * 60000 > LATE_MS);
+
+    booksEl.textContent = '';
+    BOOKS.forEach(([key, fallback]) => {
+      const info = book(key);
+      const name = info.name || fallback;
+      const ran = info.last_run_at ? Date.parse(info.last_run_at) : NaN;
+      const minutes = Number.isFinite(ran) ? Math.max(0, Math.floor((Date.now() - ran) / 60000)) : null;
+      const ok = info.last_run_ok === true && minutes != null && minutes * 60000 < STALE_MS;
+      const chip = el('li', 'chip ' + (ok ? 'ok' : 'stale'));
+      const ageText = minutes == null ? 'not checked' : fmtAgeShort(minutes);
+      const stateText = ok ? 'ok' : 'stale';
+      const dot = el('span', 'bk-dot');
+      dot.setAttribute('aria-hidden', 'true');
+      chip.append(
+        dot,
+        el('span', 'bk-name', name),
+        document.createTextNode(' · '),
+        el('span', 'bk-age', ageText),
+        document.createTextNode(' · '),
+        el('span', 'bk-state', stateText)
+      );
+      chip.setAttribute('aria-label', name + ' · ' + ageText + ' · ' + stateText);
+      chip.title = minutes == null
+        ? name + ' has not reported a check'
+        : name + ' last checked ' + fmtAgeMin(minutes)
+          + (info.last_run_ok === true ? '' : ' (the last check did not report success)');
+      booksEl.append(chip);
+    });
+  }
+
+  function renderLeagues() {
+    const leagues = [];
+    const add = (league) => {
+      if (league && league !== 'All' && !leagues.includes(league)) leagues.push(league);
+    };
+    ((state.data && state.data.games) || []).forEach((g) => add(g.league));
+    ((state.data && state.data.value) || []).forEach((v) => add(v.league));
+    if (state.league !== 'All' && !leagues.includes(state.league)) state.league = 'All';
+
+    leaguesEl.textContent = '';
+    ['All'].concat(leagues).forEach((league) => {
+      const button = el('button', null, league);
+      button.type = 'button';
+      button.dataset.league = league;
+      button.setAttribute('aria-pressed', String(state.league === league));
+      leaguesEl.append(button);
+    });
+    marketsEl.querySelectorAll('button[data-market]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.market === state.market));
+    });
+  }
+
+  /* ---------- value cards ---------- */
+
+  function valueCard(group) {
+    const best = group.best;
+    const card = el('article', 'vcard');
+    const head = el('div', 'vhead');
+    const sel = el('div', 'vsel');
+    const logo = betLogo(best);
+    if (logo) sel.append(logoImg(logo, 'selimg'));
+    else sel.append(icon(OU_ICON, 'selmark'));
+    const text = el('div');
+    text.append(el('div', 'vbet', best.bet || MARKET_LABEL[best.market] || 'Pick'));
+    const gameLine = el('div', 'vgame');
+    if (best.away_logo) gameLine.append(logoImg(best.away_logo, 'game-logo'));
+    if (best.home_logo) gameLine.append(logoImg(best.home_logo, 'game-logo'));
+    gameLine.append(document.createTextNode(matchup(best.game)));
+    gameLine.title = fullMatchup(best.game);
+    text.append(gameLine);
+    sel.append(text);
+
+    const edge = Number(group.edge);
+    head.append(sel, el('span', 'pill', edge > 0 ? 'Pays ' + fmtPct(edge) + '% more' : 'Better price'));
+
+    const quote = el('div', 'vquote');
+    quote.append(el('div', 'vprice', fmtAm(best.american)));
+    const bookWrap = el('div');
+    bookWrap.append(el('div', 'vbook', bookName(best.book)));
+    const age = Number(best.book_age_min);
+    const fresh = el('div', 'vfresh', Number.isFinite(age)
+      ? 'Checked ' + fmtAgeMin(age)
+      : 'Checked recently');
+    if (Number.isFinite(age) && age > FRESH_LIMIT) fresh.classList.add('warn');
+    bookWrap.append(fresh);
+    quote.append(bookWrap);
+
+    card.append(head, quote);
+
+    if (group.quotes.length > 1) {
+      const quotes = el('div', 'quotes');
+      group.quotes.forEach((q) => {
+        const chip = el('span', 'quote' + (q === best ? ' best' : ''));
+        chip.append(el('b', null, fmtAm(q.american)), el('span', null, bookName(q.book)));
+        quotes.append(chip);
+      });
+      card.append(quotes);
+    }
+
+    const details = el('details', 'why');
+    details.append(el('summary', null, 'Pinnacle estimate'));
+    const body = el('div', 'whybody');
+    const est = el('div', 'est');
+    const row = (label, value) => { est.append(el('span', null, label), el('b', null, value)); };
+    row('Pinnacle price', fmtAm(best.pin_american));
+    row('Pinnacle estimate', fmtAm(estimateAmerican(best)));
+    row('Pinnacle seen', Number.isFinite(Number(best.pin_age_min)) ? fmtAgeMin(best.pin_age_min) : 'unknown');
+    row('Starts', startLabel(best.start));
+    row('Game', fullMatchup(best.game));
+    row('League', [best.league, MARKET_LABEL[best.market]].filter(Boolean).join(' · '));
+    body.append(est);
+
+    if (group.quotes.length > 1) {
+      body.append(el('p', 'note', 'All books for this pick:'));
+      const list = el('div', 'est');
+      group.quotes.forEach((q) => {
+        list.append(el('span', null, bookName(q.book)), el('b', null, fmtAm(q.american)));
+      });
+      body.append(list);
+    }
+
+    body.append(el('p', 'note', 'Pinnacle sets careful prices. The estimate is its price with the fee removed. The percent on the card comes from our price feed.'));
+    body.append(el('p', 'note', 'Better price = this price divided by the estimate, minus 1.'));
+    details.append(body);
+    card.append(details);
+    return card;
+  }
+
+  function renderValue() {
+    valueEl.textContent = '';
+    if (!state.data) {
+      if (state.loading) valueEl.append(el('div', 'empty', 'Loading…'));
+      return;
+    }
+    const rows = valueRows();
+    const groups = groupValue(rows);
+    if (!groups.length) {
+      valueEl.append(el('div', 'empty', ((state.data.value || []).length ? 'No better prices for this filter.' : 'No better prices right now.')));
+      return;
+    }
+    const grid = el('div', 'vgrid' + (groups.length > 1 && !state.expanded ? ' compact' : ''));
+    groups.forEach((group) => grid.append(valueCard(group)));
+    valueEl.append(grid);
+
+    if (groups.length > 1) {
+      const more = el('button', 'more', state.expanded ? 'Show fewer' : 'Show all');
+      more.type = 'button';
+      more.setAttribute('aria-expanded', String(state.expanded));
+      more.addEventListener('click', () => {
+        state.expanded = !state.expanded;
+        renderValue();
+      });
+      valueEl.append(more);
+    }
+  }
+
+  /* ---------- table ---------- */
+
+  function entriesFor(game, market, side) {
+    const key = MARKET_KEY[market];
+    const source = game[key] || {};
+    return BOOKS.map(([bookKey]) => {
+      const raw = source[bookKey];
+      let line = null, price = null;
+      if (Array.isArray(raw)) {
+        price = market === 'moneyline' ? raw[side] : (side === 0 ? raw[1] : raw[2]);
+        if (market !== 'moneyline') line = side === 0 || market === 'total' ? raw[0] : -raw[0];
+      }
+      return {
+        key: bookKey,
+        name: bookName(bookKey),
+        line: Number.isFinite(line) ? line : null,
+        price: Number.isFinite(price) ? price : null,
+      };
+    });
+  }
+
+  function bestOf(entries, market, side) {
+    const priced = entries.filter((entry) => entry.price != null && (market === 'moneyline' || entry.line != null));
+    if (!priced.length) return null;
+    let line = null, pool = priced;
+    if (market !== 'moneyline') {
+      const lines = priced.map((entry) => entry.line);
+      line = market === 'spread'
+        ? (side === 0 ? Math.max.apply(null, lines) : Math.min.apply(null, lines))
+        : (side === 0 ? Math.min.apply(null, lines) : Math.max.apply(null, lines));
+      pool = priced.filter((entry) => Math.abs(entry.line - line) < 1e-9);
+    }
+    const max = Math.max.apply(null, pool.map((entry) => dec(entry.price)));
+    const winners = pool.filter((entry) => Math.abs(dec(entry.price) - max) < 1e-9);
+    return { line, price: winners[0].price, max, books: winners.map((entry) => entry.name) };
+  }
+
+  function lineText(line, market, side) {
+    if (market === 'moneyline' || line == null) return '';
+    if (market === 'spread') return fmtSigned(line) + ' ';
+    return (side === 0 ? 'o' : 'u') + fmtNum(line) + ' ';
+  }
+
+  function bestCell(best, market, side) {
+    const td = el('td', 'bestc');
+    if (!best) { td.append(el('span', 'na', '–')); return td; }
+    td.append(el('span', 'bp', lineText(best.line, market, side) + fmtAm(best.price)));
+    const books = el('span', 'bb', best.books[0]);
+    if (best.books.length > 1) {
+      books.textContent += ' +' + (best.books.length - 1);
+      books.title = 'Tied: ' + best.books.join(', ');
+    }
+    td.append(books);
+    return td;
+  }
+
+  function priceCell(entry, market, side) {
+    const td = el('td', 'bookc');
+    if (entry.price == null) { td.append(el('span', 'na', '–')); return td; }
+    const prefix = lineText(entry.line, market, side);
+    if (prefix) td.append(el('span', 'ln', prefix.trim()));
+    if (prefix) td.append(document.createTextNode(' '));
+    td.append(document.createTextNode(fmtAm(entry.price)));
+    td.title = entry.name + (prefix ? ' ' + prefix.trim() : '');
+    return td;
+  }
+
+  function gameRow(game, market, side, gameIndex) {
+    const tr = el('tr');
+    const team = el('th', 'evc');
+    team.scope = 'row';
+    const name = el('div', 'evname');
+    let label = '';
+    let logo = null;
+    if (market === 'total') {
+      label = side === 0 ? 'Over' : 'Under';
+    } else {
+      label = side === 0 ? game.away : game.home;
+      logo = side === 0 ? game.away_logo : game.home_logo;
+    }
+    if (logo) name.append(logoImg(logo));
+    name.append(el('span', null, label || '–'));
+    team.append(name);
+    if (side === 0) {
+      const meta = [];
+      const date = new Date(game.start);
+      if (Number.isFinite(date.getTime())) meta.push(timeFmt.format(date));
+      if (market === 'total') meta.push((game.away || '') + ' @ ' + (game.home || ''));
+      if (game.league) meta.push(game.league);
+      if (meta.length) team.append(el('div', 'evmeta', meta.join(' · ')));
+    }
+    tr.append(team);
+
+    const entries = entriesFor(game, market, side);
+    const best = bestOf(entries, market, side);
+    tr.append(bestCell(best, market, side));
+    entries.forEach((entry) => {
+      const td = priceCell(entry, market, side);
+      if (best && entry.price != null
+        && Math.abs(dec(entry.price) - best.max) < 1e-9
+        && (best.line == null || Math.abs(entry.line - best.line) < 1e-9)) {
+        td.title = entry.name + ': best price';
+      }
+      tr.append(td);
+    });
+    return tr;
+  }
+
+  function buildTable(games, market, labelId) {
+    const table = el('table', 'board');
+    if (labelId) table.setAttribute('aria-labelledby', labelId);
+    const head = el('thead');
+    const headRow = el('tr');
+    const team = el('th', 'evc', 'Team'); team.scope = 'col';
+    const best = el('th', 'bestc', 'Best price'); best.scope = 'col';
+    headRow.append(team, best);
+    BOOKS.forEach(([key]) => {
+      const th = el('th', 'bookc', bookName(key));
+      th.scope = 'col';
+      headRow.append(th);
+    });
+    head.append(headRow);
+    table.append(head);
+    games.forEach((game, index) => {
+      const body = el('tbody', 'game' + (index % 2 ? ' alt' : ''));
+      body.append(gameRow(game, market, 0, index));
+      body.append(gameRow(game, market, 1, index));
+      table.append(body);
+    });
+    return table;
+  }
+
+  function dayLabel(date) {
+    if (!date) return 'Date to be announced';
+    const today = new Date();
+    const same = (a, b) => a.getFullYear() === b.getFullYear()
+      && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    if (same(date, today)) return 'Today, ' + monthDayFmt.format(date);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    if (same(date, tomorrow)) return 'Tomorrow, ' + monthDayFmt.format(date);
+    return dayFmt.format(date).replace(',', '');
+  }
+
+  function groupDays(games) {
+    const groups = [], index = new Map();
+    games.forEach((game) => {
+      const date = new Date(game.start);
+      const valid = Number.isFinite(date.getTime());
+      const key = valid ? date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() : 'unknown';
+      if (!index.has(key)) {
+        const group = { date: valid ? date : null, games: [] };
+        index.set(key, group);
+        groups.push(group);
+      }
+      index.get(key).games.push(game);
+    });
+    return groups;
+  }
+
+  function renderBoard() {
+    boardEl.textContent = '';
+    if (!state.data) {
+      if (state.loading) boardEl.append(el('div', 'empty', 'Loading…'));
+      return;
+    }
+    const games = boardGames();
+    if (!games.length) {
+      boardEl.append(el('div', 'empty', 'No games match this filter.'));
+      return;
+    }
+    const wrap = el('div', 'boardwrap');
+    const markets = state.market === 'all' ? MARKETS : [state.market];
+    groupDays(games).forEach((day, dayIndex) => {
+      const section = el('section', 'day');
+      section.append(el('h2', 'dayh', dayLabel(day.date)));
+      markets.forEach((market, marketIndex) => {
+        const label = el('h3', 'marketh', MARKET_LABEL[market]);
+        label.id = 'mt' + dayIndex + '-' + marketIndex;
+        section.append(label, buildTable(day.games, market, label.id));
+      });
+      wrap.append(section);
+    });
+    boardEl.append(wrap);
+  }
+
+  /* ---------- view + wiring ---------- */
+
+  function applyView() {
+    pricesEl.hidden = state.view !== 'prices';
+    oddsEl.hidden = state.view !== 'odds';
+    viewsEl.querySelectorAll('button[data-view]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
+    });
+  }
+
+  function render() {
+    renderStatus();
+    renderLeagues();
+    renderValue();
+    renderBoard();
+  }
+
+  function showError(message) {
+    errorEl.textContent = '';
+    errorEl.append(el('span', null, message));
+    const retry = el('button', null, 'Retry');
+    retry.type = 'button';
+    retry.addEventListener('click', () => load());
+    errorEl.append(retry);
+    errorEl.hidden = false;
+  }
+
+  async function load() {
+    const file = SAMPLE ? 'sample-board.json' : 'board.json';
+    try {
+      const res = await fetch('./' + file + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.games)) throw new Error('unexpected data shape');
+      state.data = data;
+      errorEl.hidden = true;
+      errorEl.textContent = '';
+    } catch (err) {
+      const why = String((err && err.message) || err);
+      const hint = location.protocol === 'file:'
+        ? 'Open this page over a web address, not a file.'
+        : 'Try again in a moment.';
+      showError((state.data ? 'Refresh failed. Showing the last board. ' : 'Could not load odds. ') + hint + ' (' + why + ')');
+    } finally {
+      state.loading = false;
+      render();
+    }
+  }
+
+  viewsEl.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-view]');
+    if (!button) return;
+    state.view = button.dataset.view;
+    saveView(state.view);
+    applyView();
+  });
+
+  leaguesEl.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-league]');
+    if (!button) return;
+    state.league = button.dataset.league;
+    renderLeagues();
+    renderValue();
+    renderBoard();
+  });
+
+  marketsEl.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-market]');
+    if (!button) return;
+    state.market = button.dataset.market;
+    renderLeagues();
+    renderValue();
+    renderBoard();
+  });
+
+  let searchTimer = 0;
+  searchEl.addEventListener('input', () => {
+    state.query = searchEl.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      renderValue();
+      renderBoard();
+    }, 140);
+  });
+
+  document.addEventListener('click', (event) => {
+    const path = event.composedPath();
+    if (filtersEl.open && !path.includes(filtersEl)) filtersEl.open = false;
+    if (statusEl.open && !path.includes(statusEl)) statusEl.open = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (statusEl.open) {
+      statusEl.open = false;
+      const summary = statusEl.querySelector('summary');
+      if (summary) summary.focus();
+    }
+    if (filtersEl.open) {
+      filtersEl.open = false;
+      const summary = filtersEl.querySelector('summary');
+      if (summary) summary.focus();
+    }
+  });
+  statusEl.addEventListener('toggle', () => {
+    if (statusEl.open) filtersEl.open = false;
+  });
+  filtersEl.addEventListener('toggle', () => {
+    if (filtersEl.open) statusEl.open = false;
+  });
+
+  applyView();
+  render();
+  load();
+  setInterval(load, 60000);
+  setInterval(() => {
+    renderStatus();
+  }, 30000);
+})();
+</script>
+</body>
+</html>
